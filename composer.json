@@ -1,0 +1,32 @@
+{
+    "name": "jhamilton86/mongolog-browser-bundle",
+    "type": "symfony-bundle",
+    "description": "This Symfony2 bundle provides a MongoDB handler for Monolog and a web UI to display log entries, based on the Lexik Monolog Browser Bundle",
+    "keywords": ["Symfony2", "bundle", "monolog", "logger", "doctrine"],
+    "homepage": "https://github.com/jhamilton86/MongologBrowserBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeremy Barthe",
+            "email": "j.barthe@lexik.fr"
+        },
+        {
+            "name": "Jonathan Hamilton",
+            "email": ""
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": "~2.1",
+        "knplabs/knp-paginator-bundle": ">=2.3"
+    },
+    "require-dev": {
+        "monolog/monolog": "*",
+        "doctrine/dbal": "*"
+    },
+    "autoload": {
+        "psr-0": { "Mongolog\\Bundle\\MongologBrowserBundle": "" }
+    },
+    "target-dir": "Mongolog/Bundle/MongologBrowserBundle"
+}

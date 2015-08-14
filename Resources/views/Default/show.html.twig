@@ -1,0 +1,97 @@
+{% extends base_layout %}
+
+{% trans_default_domain 'MongologBrowserBundle' %}
+
+{% import "MongologBrowserBundle::utils.html.twig" as utils %}
+
+{% block monolog_browser_content %}
+    {{ block('log_header') }}
+    {{ block('log_content') }}
+{% endblock %}
+
+{% block log_header %}
+    <a href="{{ path('mongolog_browser_index') }}" class="btn btn-small btn-primary">
+        <i class="icon-chevron-left icon-white"></i>
+        {{ 'log.show.back' | trans }}
+    </a>
+
+    <div class="page-header monolog-browser-header">
+        <div class="well well-small">
+            <h1>{{ log.message }}</h1>
+        </div>
+        {{ utils.render_level_label(log.level, (log.channel ~ '.' ~ log.levelName), { 'class': 'pull-right' }) }}
+        <strong>{{ log.date | date }}</strong>
+    </div>
+{% endblock %}
+
+{% block log_content %}
+    <div class="tabbable tabs-left">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#extra" data-toggle="tab">{{ 'log.show.extra' | trans }}</a></li>
+            <li><a href="#context" data-toggle="tab">{{ 'log.show.context' | trans }}</a></li>
+            <li><a href="#request" data-toggle="tab">{{ 'log.show.request' | trans }}</a></li>
+            <li><a href="#similar" data-toggle="tab">{{ 'log.show.similar' | trans }} {{ utils.render_count_badge(similar_logs | length) }}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="extra">
+                {{ _self.render_data_table(log.extra) }}
+            </div>
+            <div class="tab-pane" id="context">
+                {{ _self.render_data_table(log.context) }}
+            </div>
+            <div class="tab-pane" id="request">
+                <h2>SERVER</h2>
+                {{ _self.render_data_table(log.serverData) }}
+                <h2>POST</h2>
+                {{ _self.render_data_table(log.postData) }}
+                <h2>GET</h2>
+                {{ _self.render_data_table(log.getData) }}
+            </div>
+            <div class="tab-pane" id="similar">
+                {% if similar_logs | length %}
+                    <table class="table table-stripped monolog-browser-results">
+                        <thead>
+                            <tr>
+                                <th>{{ knp_pagination_sortable(similar_logs, 'log.results.datetime' | trans, 'l.datetime') }}</th>
+                                <th>{{ knp_pagination_sortable(similar_logs, 'log.results.message' | trans, 'l.message') }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in similar_logs %}
+                            <tr>
+                                <td>{{ date(log.datetime) | date('F j H:i:s') }}</td>
+                                <td>
+                                    <a href="{{ path('mongolog_browser_show', { 'id': log.id }) }}">
+                                        {{ log.message }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ utils.render_level_label(log.level, (log.channel ~ '.' ~ log.level_name)) }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="navigation">
+                        {{ knp_pagination_render(similar_logs) }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% macro render_data_table(data) %}
+    <table class="table table-striped">
+        <tbody>
+            {% for label, value in data %}
+                <tr>
+                    <th>{{ label }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
