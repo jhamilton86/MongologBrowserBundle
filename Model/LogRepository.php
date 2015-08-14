@@ -43,7 +43,7 @@ class LogRepository
 
         $data = $this->createQueryBuilder()->find($search);
 
-        $data->skip($skip)->limit($logsPerPage);
+        $data->skip($skip)->limit($logsPerPage)->sort(array('$natural' => -1));
 
         return array(
             'total' => $data->count(),

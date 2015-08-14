@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongolog\Bundle\MonoglogBrowserBundle\Model;
+namespace Mongolog\Bundle\MongologBrowserBundle\Model;
 
 /**
  * @author Jeremy Barthe <j.barthe@lexik.fr>
