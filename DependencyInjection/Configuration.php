@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle\DependencyInjection;
+namespace Mongolog\Bundle\MongologBrowserBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

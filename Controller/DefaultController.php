@@ -1,9 +1,9 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle\Controller;
+namespace Mongolog\Bundle\MongologBrowserBundle\Controller;
 
-use Mongolog\Bundle\MonologBrowserBundle\Form\LogSearchType;
-use Mongolog\Bundle\MonologBrowserBundle\Model\LogRepository;
+use Mongolog\Bundle\MongologBrowserBundle\Form\LogSearchType;
+use Mongolog\Bundle\MongologBrowserBundle\Model\LogRepository;
 use MongoClient;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle\DependencyInjection;
+namespace Mongolog\Bundle\MongologBrowserBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;

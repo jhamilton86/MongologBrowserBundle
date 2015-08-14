@@ -1,8 +1,8 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle\Model;
+namespace Mongolog\Bundle\MongologBrowserBundle\Model;
 
-use Mongolog\Bundle\MonologBrowserBundle\Model\Log;
+use Mongolog\Bundle\MongologBrowserBundle\Model\Log;
 
 /**
  * @author Jeremy Barthe <j.barthe@lexik.fr>

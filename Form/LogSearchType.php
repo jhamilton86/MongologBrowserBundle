@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle\Form;
+namespace Mongolog\Bundle\MongologBrowserBundle\Form;
 
 use MongoClient;
 use Symfony\Component\Form\AbstractType;

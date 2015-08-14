@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle\Model;
+namespace Mongolog\Bundle\MongologBrowserBundle\Model;
 
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Schema\Schema;

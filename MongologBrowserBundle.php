@@ -1,6 +1,6 @@
 <?php
 
-namespace Mongolog\Bundle\MonologBrowserBundle;
+namespace Mongolog\Bundle\MongologBrowserBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
