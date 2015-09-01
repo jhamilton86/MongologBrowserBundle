@@ -41,17 +41,11 @@ class LogSearchType extends AbstractType
                 'choices'     => $options['log_levels'],
                 'required'    => false
             ))
-            ->add('date_from', 'datetime', array(
-                'date_widget' => 'single_text',
-                'date_format' => 'yyyy/MM/dd',
-//                'time_widget' => 'text',
-                'required'    => false,
+            ->add('datefrom', 'text', array(
+                'required'    => true,
             ))
-            ->add('date_to', 'datetime', array(
-                'date_widget' => 'single_text',
-                'date_format' => 'yyyy/MM/dd',
-//                'time_widget' => 'text',
-                'required'    => false,
+            ->add('dateto', 'text', array(
+                'required'    => true,
             ))
         ;
     }

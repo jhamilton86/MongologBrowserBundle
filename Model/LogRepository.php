@@ -3,6 +3,8 @@
 namespace Mongolog\Bundle\MongologBrowserBundle\Model;
 
 use Mongolog\Bundle\MongologBrowserBundle\Model\Log;
+use Symfony\Component\Security\Acl\Exception\Exception;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @author Jeremy Barthe <j.barthe@lexik.fr>
@@ -58,6 +60,20 @@ class LogRepository
 
     public function search($page, $logsPerPage, $data)
     {
+
+        if (!isset($data['datefrom']) && !isset($data['dateto']))
+        {
+            throw new \Exception('A valid date range must be entered');
+        }
+
+        $datefrom = new \DateTime($data['datefrom']);
+        $dateto = new \DateTime($data['dateto']);
+
+        if ($datefrom > $dateto)
+        {
+            throw new \Exception('Start date cannot be after the end date.');
+        }
+
         $query = array();
 
         if (null !== $data['term'])
@@ -74,14 +90,14 @@ class LogRepository
             );
         }
 
-        if ($data['date_from'] instanceof \DateTime)
+        if ($datefrom !== null)
         {
-            $query['datetime']['$gte'] = date_format($data['date_from'], 'Y-m-d H:i:s');
+            $query['datetime']['$gte'] = date_format($datefrom, 'Y-m-d H:i:s');
         }
 
-        if ($data['date_to'] instanceof \DateTime)
+        if ($dateto !== null)
         {
-            $query['datetime']['$lte'] = date_format($data['date_to'], 'Y-m-d H:i:s');
+            $query['datetime']['$lte'] = date_format($dateto, 'Y-m-d H:i:s');
         }
 
         return $this->getLogsQueryBuilder($page, $logsPerPage, $query);
