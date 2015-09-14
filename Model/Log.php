@@ -7,22 +7,33 @@ namespace Mongolog\Bundle\MongologBrowserBundle\Model;
  */
 class Log
 {
-    protected $id;
-    protected $channel;
-    protected $level;
-    protected $levelName;
-    protected $message;
-    protected $date;
-    protected $context;
-    protected $extra;
-    protected $serverData;
-    protected $postData;
-    protected $getData;
+    const MAX_MESSAGE_LENGTH = 100;
+
+    private $requiredParams = array(
+        'id',
+        'channel',
+        'level',
+        'level_name',
+        'message',
+        'datetime'
+    );
+
+    private $id;
+    private $channel;
+    private $level;
+    private $levelName;
+    private $message;
+    private $date;
+    private $context;
+    private $extra;
 
     public function __construct(array $data)
     {
-        if (!isset($data['id'])) {
-            throw new \InvalidArgumentException();
+        foreach($this->requiredParams as $param)
+        {
+            if (!isset($data[$param])) {
+                throw new \InvalidArgumentException("Property '$param' must be present in input array");
+            }
         }
 
         $this->id         = $data['id'];
@@ -33,15 +44,12 @@ class Log
         $this->date       = new \DateTime($data['datetime']);
         $this->context    = isset($data['context'])     ? $data['context']    : array();
         $this->extra      = isset($data['extra'])       ? $data['extra']      : array();
-//        $this->serverData = isset($data['http_server']) ? $data['http_server']: array();
-//        $this->postData   = isset($data['http_post'])   ? $data['http_post']  : array();
-//        $this->getData    = isset($data['http_get'])    ? $data['http_get']   : array();
 
     }
 
     public function __toString()
     {
-        return mb_strlen($this->message) > 100 ? sprintf('%s...', mb_substr($this->message, 0, 100)) : $this->message;
+        return mb_strlen($this->message) > self::MAX_MESSAGE_LENGTH ? sprintf('%s...', mb_substr($this->message, 0, self::MAX_MESSAGE_LENGTH)) : $this->message;
     }
 
     public function getId()
@@ -82,20 +90,5 @@ class Log
     public function getExtra()
     {
         return $this->extra;
-    }
-
-    public function getServerData()
-    {
-        return $this->serverData;
-    }
-
-    public function getPostData()
-    {
-        return $this->postData;
-    }
-
-    public function getGetData()
-    {
-        return $this->getData;
     }
 }

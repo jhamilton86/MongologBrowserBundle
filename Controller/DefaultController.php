@@ -3,6 +3,7 @@
 namespace Mongolog\Bundle\MongologBrowserBundle\Controller;
 
 use Mongolog\Bundle\MongologBrowserBundle\Form\LogSearchType;
+use Mongolog\Bundle\MongologBrowserBundle\Model\DateRangeSet;
 use Mongolog\Bundle\MongologBrowserBundle\Model\LogRepository;
 use MongoClient;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,6 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class DefaultController extends Controller
 {
+    private function getDateRangeFromQueryParams(array $params)
+    {
+        return new DateRangeSet(new \DateTime($params['datefrom']), new \DateTime($params['dateto']));
+    }
 
     /**
      * @param Request $request
@@ -37,7 +42,14 @@ class DefaultController extends Controller
             {
                 $filter->submit($search);
 
-                $query = $this->getLogRepository()->search($page, $logsPerPage, $filter->getData());
+                $validParams = $filter->getData();
+
+                $query = $this->getLogRepository()->search(
+                    $page,
+                    $logsPerPage,
+                    $this->getDateRangeFromQueryParams($validParams),
+                    $validParams['term'],
+                    $validParams['level']);
             }
             else
             {
@@ -112,7 +124,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @return \Mongolog\Bundle\MonologBrowserBundle\Model\LogRepository
+     * @return \Mongolog\Bundle\MongologBrowserBundle\Model\LogRepository
      */
     protected function getLogRepository()
     {

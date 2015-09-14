@@ -12,7 +12,7 @@
         },
         {
             "name": "Jonathan Hamilton",
-            "email": ""
+            "email": "jonathan.hamilton@me.com"
         }
     ],
     "minimum-stability": "dev",
@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "monolog/monolog": "*",
-        "doctrine/dbal": "*"
+        "phpunit/phpunit": "*"
     },
     "autoload": {
         "psr-0": { "Mongolog\\Bundle\\MongologBrowserBundle": "" }

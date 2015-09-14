@@ -11,10 +11,22 @@ use Symfony\Component\Validator\Constraints\DateTime;
  */
 class LogRepository
 {
+
+    const LOG_LEVEL_VALUES = array(
+        100 => 'Debug',
+        200 => 'Info',
+        250 => 'Notice',
+        300 => 'Warning',
+        400 => 'Error',
+        500 => 'Critical',
+        550 => 'Alert',
+        600 => 'Emergency'
+    );
+
     /**
-     * @var \MongoDB $conn
+     * @var \MongoCollection $conn
      */
-    private $conn;
+    private $collection;
 
     /**
      * @param \MongoClient $conn
@@ -23,27 +35,22 @@ class LogRepository
      */
     public function __construct(\MongoClient $conn, $databaseName, $collectionName)
     {
-        $this->conn = $conn->selectDB($databaseName)->createCollection($collectionName);
-    }
-
-    /**
-     * @return \MongoCollection
-     */
-    private function createQueryBuilder()
-    {
-        return $this->conn;
+        $this->collection = $conn->selectDB($databaseName)->createCollection($collectionName);
     }
 
     /**
      * Initialize a QueryBuilder of latest log entries.
      *
+     * @param $page
+     * @param $logsPerPage
+     * @param array $search
      * @return array
      */
     private function getLogsQueryBuilder($page, $logsPerPage, $search = array())
     {
         $skip = $logsPerPage * ($page - 1);
 
-        $data = $this->createQueryBuilder()->find($search);
+        $data = $this->collection->find($search);
 
         $data->skip($skip)->limit($logsPerPage)->sort(array('$natural' => -1));
 
@@ -53,52 +60,45 @@ class LogRepository
         );
     }
 
+    /**
+     * @param $page
+     * @param $logsPerPage
+     * @return array
+     */
     public function all($page, $logsPerPage)
     {
         return $this->getLogsQueryBuilder($page, $logsPerPage);
     }
 
-    public function search($page, $logsPerPage, $data)
+    /**
+     * @param $page
+     * @param $logsPerPage
+     * @param DateRangeSet $dateRange
+     * @param null $message
+     * @param null $level
+     * @return array
+     */
+    public function search($page, $logsPerPage, DateRangeSet $dateRange, $message = null, $level = null)
     {
-
-        if (!isset($data['datefrom']) && !isset($data['dateto']))
-        {
-            throw new \Exception('A valid date range must be entered');
-        }
-
-        $datefrom = new \DateTime($data['datefrom']);
-        $dateto = new \DateTime($data['dateto']);
-
-        if ($datefrom > $dateto)
-        {
-            throw new \Exception('Start date cannot be after the end date.');
-        }
-
         $query = array();
 
-        if (null !== $data['term'])
+        if (null !== $message && $message !== '')
         {
             $query['message'] = array(
-                '$regex' => $data['term']
+                '$regex' => $message
             );
         }
 
-        if (null !== $data['level'])
+        if ($level > 0 && in_array($level, array_keys(self::getLogsLevel())))
         {
             $query['level'] = array(
-                '$eq' => $data['level']
+                '$eq' => $level
             );
         }
 
-        if ($datefrom !== null)
-        {
-            $query['datetime']['$gte'] = date_format($datefrom, 'Y-m-d H:i:s');
-        }
+        $query['datetime']['$gte'] = $dateRange->getStart();
 
-        if ($dateto !== null)
-        {
-            $query['datetime']['$lte'] = date_format($dateto, 'Y-m-d H:i:s');
-        }
+        $query['datetime']['$lte'] = $dateRange->getEnd();
 
         return $this->getLogsQueryBuilder($page, $logsPerPage, $query);
     }
@@ -106,13 +106,13 @@ class LogRepository
     /**
      * Retrieve a log entry by his ID.
      *
-     * @param integer $id
+     * @param string $id
      *
      * @return Log|null
      */
     public function getLogById($id)
     {
-        $log = $this->createQueryBuilder()
+        $log = $this->collection
             ->findOne(
                 array(
                     '_id' => array(
@@ -121,7 +121,7 @@ class LogRepository
                 )
             );
 
-        if(!$log) return;
+        if(!$log) return null;
 
         $log['id'] = $log['_id'];
 
@@ -135,15 +135,6 @@ class LogRepository
      */
     public function getLogsLevel()
     {
-        return array(
-            100 => 'Debug',
-            200 => 'Info',
-            250 => 'Notice',
-            300 => 'Warning',
-            400 => 'Error',
-            500 => 'Critical',
-            550 => 'Alert',
-            600 => 'Emergency'
-        );
+        return self::LOG_LEVEL_VALUES;
     }
 }
