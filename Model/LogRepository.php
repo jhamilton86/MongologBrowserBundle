@@ -1,10 +1,7 @@
 <?php
 
 namespace Mongolog\Bundle\MongologBrowserBundle\Model;
-
-use Mongolog\Bundle\MongologBrowserBundle\Model\Log;
-use Symfony\Component\Security\Acl\Exception\Exception;
-use Symfony\Component\Validator\Constraints\DateTime;
+use MongoClient;
 
 /**
  * @author Jeremy Barthe <j.barthe@lexik.fr>
@@ -12,7 +9,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class LogRepository
 {
 
-    const LOG_LEVEL_VALUES = array(
+    private static $logLevelValues = array(
         100 => 'Debug',
         200 => 'Info',
         250 => 'Notice',
@@ -29,11 +26,11 @@ class LogRepository
     private $collection;
 
     /**
-     * @param \MongoClient $conn
+     * @param MongoClient $conn
      * @param $databaseName
      * @param $collectionName
      */
-    public function __construct(\MongoClient $conn, $databaseName, $collectionName)
+    public function __construct(MongoClient $conn, $databaseName, $collectionName)
     {
         $this->collection = $conn->selectDB($databaseName)->createCollection($collectionName);
     }
@@ -135,6 +132,6 @@ class LogRepository
      */
     public function getLogsLevel()
     {
-        return self::LOG_LEVEL_VALUES;
+        return self::$logLevelValues;
     }
 }
