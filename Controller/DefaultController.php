@@ -33,11 +33,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $logRepository = $this->getLogRepository();
 
-        $connection = $this->getMongoConnection();
-
-        $filter = $this->get('form.factory')->create(new LogSearchType($connection, 'logs', 'logs'), null, array(
-            'log_levels'    => $this->getLogRepository()->getLogsLevel(),
+        $filter = $this->get('form.factory')->create(new LogSearchType(), null, array(
+            'log_levels'    => $logRepository->getLogsLevel(),
         ));
 
         try {
@@ -53,7 +52,7 @@ class DefaultController extends Controller
 
                 $mongoQuery = $this->parseSearchQuery($validParams['term']);
 
-                $query = $this->getLogRepository()->search(
+                $query = $logRepository->search(
                     $page,
                     $logsPerPage,
                     $this->getDateRangeFromQueryParams($validParams),
@@ -62,7 +61,7 @@ class DefaultController extends Controller
             }
             else
             {
-                $query = $this->getLogRepository()->all($page, $logsPerPage);
+                $query = $logRepository->all($page, $logsPerPage);
 
             }
 
@@ -121,7 +120,9 @@ class DefaultController extends Controller
      */
     public function showAction(Request $request, $id)
     {
-        $log = $this->getLogRepository()->getLogById($id);
+        $logRepository = $this->getLogRepository();
+
+        $log = $logRepository->getLogById($id);
 
         if (null === $log) {
             throw $this->createNotFoundException('The log entry does not exist');
@@ -142,20 +143,21 @@ class DefaultController extends Controller
     }
 
     /**
-     * @return MongoClient
+     * @return \MongoCollection
      */
-    private function getMongoConnection()
+    private function getMongoCollection()
     {
-        $server = $this->container->getParameter('mongodb_server');
-        $username = $this->container->getParameter('mongodb_username');
-        $password = $this->container->getParameter('mongodb_password');
-        $db = $this->container->getParameter('mongodb_database');
+        $server = $this->container->getParameter('mongolog_browser.mongo.host');
+        $username = $this->container->getParameter('mongolog_browser.mongo.username');
+        $password = $this->container->getParameter('mongolog_browser.mongo.password');
+        $db = $this->container->getParameter('mongolog_browser.mongo.database');
+        $collection = $this->container->getParameter('mongolog_browser.mongo.collection');
 
-        return new MongoClient($server, array(
+        return (new MongoClient($server, array(
             'username' => $username,
             'password' => $password,
             'db' => $db
-        ));
+        )))->selectCollection($db, $collection);
     }
 
     /**
@@ -163,8 +165,6 @@ class DefaultController extends Controller
      */
     protected function getLogRepository()
     {
-        $connection = $this->getMongoConnection();
-
-        return new LogRepository($connection, 'logs', 'logs');
+        return new LogRepository($this->getMongoCollection());
     }
 }

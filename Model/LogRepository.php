@@ -1,7 +1,6 @@
 <?php
 
 namespace Mongolog\Bundle\MongologBrowserBundle\Model;
-use MongoClient;
 
 /**
  * @author Jeremy Barthe <j.barthe@lexik.fr>
@@ -26,13 +25,11 @@ class LogRepository
     private $collection;
 
     /**
-     * @param MongoClient $conn
-     * @param $databaseName
-     * @param $collectionName
+     * @param \MongoCollection $collection
      */
-    public function __construct(MongoClient $conn, $databaseName, $collectionName)
+    public function __construct(\MongoCollection $collection)
     {
-        $this->collection = $conn->selectDB($databaseName)->createCollection($collectionName);
+        $this->collection = $collection;
     }
 
     /**
