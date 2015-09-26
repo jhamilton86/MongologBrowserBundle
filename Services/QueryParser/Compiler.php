@@ -39,6 +39,7 @@ class Compiler
                     break;
 
                 case Parser::TOK_LITERAL:
+                case Parser::TOK_STRING_LITERAL:
                     $stack->add(new Literal($this->retrieveCapture($token)));
                     break;
 

@@ -15,6 +15,8 @@ class Parser
 
     const TOK_LITERAL = 'literal';
 
+    const TOK_STRING_LITERAL = 'string literal';
+
     const TOK_INT_LITERAL = 'int literal';
 
     const TOK_FLOAT_LITERAL = 'float literal';
@@ -63,8 +65,8 @@ class Parser
         return array(
             '(?:\s+)?(\d+)(?:\s+)?'             => self::TOK_INT_LITERAL,
             '(?:\s+)?(\d+\.\d+)(?:\s+)?'        => self::TOK_FLOAT_LITERAL,
-            '(?:\s+)?\'(.+?)\'(?:\s+)?'         => self::TOK_LITERAL,
-            '(?:\s+)?"(.+?)"(?:\s+)?'           => self::TOK_LITERAL,
+            '(?:\s+)?\'(.+?)\'(?:\s+)?'         => self::TOK_STRING_LITERAL,
+            '(?:\s+)?"(.+?)"(?:\s+)?'           => self::TOK_STRING_LITERAL,
             '(?:\s+)?([A-Za-z0-9_\.]+)(?:\s+)?' => self::TOK_LITERAL,
         );
     }
