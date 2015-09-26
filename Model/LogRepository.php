@@ -53,8 +53,15 @@ class LogRepository
 
         return array(
             'total' => $data->count(),
-            'results' => iterator_to_array($data),
+            'results' => array_map([$this, 'convertArrayToEntity'], iterator_to_array($data)),
         );
+    }
+
+    private function convertArrayToEntity(array $data)
+    {
+        $data['id'] = $data['_id'];
+
+        return new Log($data);
     }
 
     /**
@@ -71,21 +78,12 @@ class LogRepository
      * @param $page
      * @param $logsPerPage
      * @param DateRangeSet $dateRange
-     * @param null $message
+     * @param array $query
      * @param null $level
      * @return array
      */
-    public function search($page, $logsPerPage, DateRangeSet $dateRange, $message = null, $level = null)
+    public function search($page, $logsPerPage, DateRangeSet $dateRange, array $query = array(), $level = null)
     {
-        $query = array();
-
-        if (null !== $message && $message !== '')
-        {
-            $query['message'] = array(
-                '$regex' => $message
-            );
-        }
-
         if ($level > 0 && in_array($level, array_keys(self::getLogsLevel())))
         {
             $query['level'] = array(
@@ -120,9 +118,7 @@ class LogRepository
 
         if(!$log) return null;
 
-        $log['id'] = $log['_id'];
-
-        return new Log($log);
+        return $this->convertArrayToEntity($log);
     }
 
     /**
