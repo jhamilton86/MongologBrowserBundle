@@ -36,12 +36,15 @@ class Log
             }
         }
 
+        $date = new \DateTime();
+        $date->setTimestamp($data['datetime']);
+
         $this->id         = $data['id'];
         $this->channel    = $data['channel'];
         $this->level      = $data['level'];
         $this->levelName  = $data['level_name'];
         $this->message    = $data['message'];
-        $this->date       = new \DateTime($data['datetime']);
+        $this->date       = $date;
         $this->context    = isset($data['context'])     ? $data['context']    : array();
         $this->extra      = isset($data['extra'])       ? $data['extra']      : array();
 
