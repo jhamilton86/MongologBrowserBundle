@@ -122,9 +122,19 @@ class Log
 
         foreach($items as $name => $item)
         {
-            $parts[] = "{$prefix}{$name} = '{$item}'";
+            $parts[] = "{$prefix}{$name} = " . $this->enquoteItem($item);
         }
 
         return implode(',', $parts);
+    }
+
+    private function enquoteItem($item)
+    {
+        if(is_int($item) || is_float($item))
+        {
+            return $item;
+        }
+
+        return "'$item'";
     }
 }
