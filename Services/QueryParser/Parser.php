@@ -1,0 +1,82 @@
+<?php namespace Mongolog\Bundle\MongologBrowserBundle\Services\QueryParser;
+
+use Mongolog\Bundle\MongologBrowserBundle\Services\QueryParser\Compiler\Token\LogicalOperator;
+use Mongolog\Bundle\MongologBrowserBundle\Services\QueryParser\Compiler\Token\Operator;
+use Phlexy\LexerDataGenerator;
+use Phlexy\LexerFactory\Stateless\UsingPregReplace;
+
+class Parser
+{
+    protected $lexer;
+
+    const TOK_WHITESPACE = 'whitespace';
+
+    const TOK_RBRACKET = 'closing bracket';
+
+    const TOK_LITERAL = 'literal';
+
+    const TOK_EXPRESSION_SPLIT = ',';
+
+    public function __construct()
+    {
+        $factory = new UsingPregReplace(new LexerDataGenerator);
+
+        $this->lexer = $factory->createLexer($this->getConfig());
+    }
+
+    private function getConfig()
+    {
+        $tokens = array(
+
+            '\]'                            => self::TOK_RBRACKET,
+            'and\['                         => new LogicalOperator('$and'),
+            'AND\['                         => new LogicalOperator('$and'),
+            'or\['                          => new LogicalOperator('$or'),
+            'OR\['                          => new LogicalOperator('$or'),
+            '>='                            => new Operator('$gte'),
+            '<='                            => new Operator('$lte'),
+            '<'                             => new Operator('$lt'),
+            '>'                             => new Operator('$gt'),
+            '='                             => new Operator('$eq'),
+            '=='                            => new Operator('$eq'),
+            '!='                            => new Operator('$ne'),
+            '<>'                            => new Operator('$ne'),
+            '~='                            => new Operator('$regex'),
+            ','                             => self::TOK_EXPRESSION_SPLIT,
+            '\s+'                           => self::TOK_WHITESPACE,
+        );
+
+        foreach($this->getLiterals() as $literal)
+        {
+            $tokens[$literal] = self::TOK_LITERAL;
+        }
+
+        return $tokens;
+    }
+
+    private function getLiterals()
+    {
+        return array(
+            '(?:\s+)?\'(.+?)\'(?:\s+)?',
+            '(?:\s+)?"(.+?)"(?:\s+)?',
+            '(?:\s+)?([A-Za-z0-9_\.]+)(?:\s+)?',
+        );
+    }
+
+    public function isSimpleLiteral($string)
+    {
+        foreach($this->getLiterals() as $literal)
+        {
+            if(preg_match("/^$literal$/", $string)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function parse($string)
+    {
+        return $this->lexer->lex($string);
+    }
+}

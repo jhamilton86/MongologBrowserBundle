@@ -2,13 +2,20 @@
 
 namespace Mongolog\Bundle\MongologBrowserBundle\Controller;
 
+use MongoException;
 use Mongolog\Bundle\MongologBrowserBundle\Form\LogSearchType;
 use Mongolog\Bundle\MongologBrowserBundle\Model\DateRangeSet;
 use Mongolog\Bundle\MongologBrowserBundle\Model\LogRepository;
 use MongoClient;
+use Mongolog\Bundle\MongologBrowserBundle\Services\QueryParser\Compiler;
+use Mongolog\Bundle\MongologBrowserBundle\Services\QueryParser\Exception\QueryParserException;
+use Mongolog\Bundle\MongologBrowserBundle\Services\QueryParser\Parser;
+use InvalidArgumentException;
+use Phlexy\LexingException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
+class InvalidSearchException extends InvalidArgumentException{}
 
 /**
  * @author Jeremy Barthe <j.barthe@lexik.fr>
@@ -44,11 +51,13 @@ class DefaultController extends Controller
 
                 $validParams = $filter->getData();
 
+                $mongoQuery = $this->parseSearchQuery($validParams['term']);
+
                 $query = $this->getLogRepository()->search(
                     $page,
                     $logsPerPage,
                     $this->getDateRangeFromQueryParams($validParams),
-                    $validParams['term'],
+                    $mongoQuery,
                     $validParams['level']);
             }
             else
@@ -65,7 +74,10 @@ class DefaultController extends Controller
 
             $pagination->setTotalItemCount($query['total']);
 
-        } catch (\MongoException $e) {
+        } catch (MongoException $e) {
+            $this->get('session')->getFlashBag()->add('error', $e->getMessage());
+            $pagination = array();
+        }catch (InvalidSearchException $e) {
             $this->get('session')->getFlashBag()->add('error', $e->getMessage());
             $pagination = array();
         }
@@ -76,6 +88,29 @@ class DefaultController extends Controller
             'results'     => isset($query['results']) ? $query['results'] : array(),
             'base_layout' => $this->getBaseLayout(),
         ));
+    }
+
+    private function parseSearchQuery($searchQuery)
+    {
+        $parser = new Parser();
+
+        // Handle a basic message search eg: 'foo bar'
+        if($parser->isSimpleLiteral($searchQuery)){
+            return array('message' => array('$regex' => $searchQuery));
+        }
+
+        // Handle a full query search eg: 'foo > bar'
+        $compiler = new Compiler();
+
+        try {
+            return $compiler->compile($parser->parse($searchQuery));
+        }catch (QueryParserException $e)
+        {
+            throw new InvalidSearchException(sprintf("Invalid search string '%s' near '%s'", $searchQuery, $e->getMessage()));
+        }catch (LexingException $e)
+        {
+            throw new InvalidSearchException(sprintf("Invalid search string '%s' near '%s'", $searchQuery, $e->getMessage()));
+        }
     }
 
     /**

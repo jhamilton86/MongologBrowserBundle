@@ -71,21 +71,12 @@ class LogRepository
      * @param $page
      * @param $logsPerPage
      * @param DateRangeSet $dateRange
-     * @param null $message
+     * @param array $query
      * @param null $level
      * @return array
      */
-    public function search($page, $logsPerPage, DateRangeSet $dateRange, $message = null, $level = null)
+    public function search($page, $logsPerPage, DateRangeSet $dateRange, array $query = array(), $level = null)
     {
-        $query = array();
-
-        if (null !== $message && $message !== '')
-        {
-            $query['message'] = array(
-                '$regex' => $message
-            );
-        }
-
         if ($level > 0 && in_array($level, array_keys(self::getLogsLevel())))
         {
             $query['level'] = array(
