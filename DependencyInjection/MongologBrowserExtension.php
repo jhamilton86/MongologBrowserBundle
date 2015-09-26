@@ -29,19 +29,10 @@ class MongologBrowserExtension extends Extension
         $container->setParameter('mongolog_browser.base_layout', $config['base_layout']);
         $container->setParameter('mongolog_browser.logs_per_page', $config['logs_per_page']);
 
-        $container->setParameter('mongolog_browser.mongo.collection_name', $config['mongo']['collection_name']);
-        $container->setParameter('mongolog_browser.mongo.database_name', $config['mongo']['database_name']);
-        $container->setDefinition('mongolog_browser.mongo.connection', new Definition('MongoClient'));
-
-//        if (isset($config['doctrine']['connection_name'])) {
-//            $container->setAlias('mongolog_browser.doctrine_dbal.connection', sprintf('doctrine.dbal.%s_connection', $config['doctrine']['connection_name']));
-//        }
-
-//        if (isset($config['doctrine']['connection'])) {
-//            $connectionDefinition = new Definition('Doctrine\DBAL\Connection', array($config['doctrine']['connection']));
-//            $connectionDefinition->setFactoryClass('Doctrine\DBAL\DriverManager');
-//            $connectionDefinition->setFactoryMethod('getConnection');
-//            $container->setDefinition('mongolog_browser.doctrine_dbal.connection', $connectionDefinition);
-//        }
+        $container->setParameter('mongolog_browser.mongo.host', $config['mongo']['host']);
+        $container->setParameter('mongolog_browser.mongo.collection', $config['mongo']['collection']);
+        $container->setParameter('mongolog_browser.mongo.database', $config['mongo']['database']);
+        $container->setParameter('mongolog_browser.mongo.username', $config['mongo']['username']);
+        $container->setParameter('mongolog_browser.mongo.password', $config['mongo']['password']);
     }
 }
