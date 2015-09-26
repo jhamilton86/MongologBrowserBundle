@@ -36,7 +36,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('mongo')
                     ->children()
-                        ->scalarNode('server')->cannotBeEmpty()->end()
+                        ->scalarNode('host')->cannotBeEmpty()->end()
                         ->scalarNode('collection')->cannotBeEmpty()->end()
                         ->scalarNode('database')->cannotBeEmpty()->end()
                         ->scalarNode('username')->end()
