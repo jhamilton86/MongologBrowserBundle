@@ -36,8 +36,14 @@ class Log
             }
         }
 
-        $date = new \DateTime();
-        $date->setTimestamp($data['datetime']);
+        if(is_numeric($data['datetime']))
+        {
+            $date = (new \DateTime())->setTimestamp($data['datetime']);
+        }else
+        {
+            $date = new \DateTime($data['datetime']);
+        }
+
 
         $this->id         = $data['id'];
         $this->channel    = $data['channel'];

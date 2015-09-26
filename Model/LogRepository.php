@@ -53,7 +53,9 @@ class LogRepository
 
         return array(
             'total' => $data->count(),
-            'results' => iterator_to_array($data),
+            'results' => array_map(function(array $data){
+                return new Log($data);
+            }, iterator_to_array($data)),
         );
     }
 
