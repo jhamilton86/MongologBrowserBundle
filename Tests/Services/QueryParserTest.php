@@ -46,6 +46,12 @@ class QueryParserTest extends \PHPUnit_Framework_TestCase {
                 ],
             ]),
 
+            array('a = "10.10.1.1"', [
+                'a' => [
+                    '$eq' => '10.10.1.1'
+                ],
+            ]),
+
             array('a ~= "foo bar @£$~+="', [
                 'a' => [
                     '$regex' => 'foo bar @£$~+='
