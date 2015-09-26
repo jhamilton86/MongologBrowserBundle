@@ -15,6 +15,10 @@ class Parser
 
     const TOK_LITERAL = 'literal';
 
+    const TOK_INT_LITERAL = 'int literal';
+
+    const TOK_FLOAT_LITERAL = 'float literal';
+
     const TOK_EXPRESSION_SPLIT = ',';
 
     public function __construct()
@@ -46,9 +50,9 @@ class Parser
             '\s+'                           => self::TOK_WHITESPACE,
         );
 
-        foreach($this->getLiterals() as $literal)
+        foreach($this->getLiterals() as $literal => $token)
         {
-            $tokens[$literal] = self::TOK_LITERAL;
+            $tokens[$literal] = $token;
         }
 
         return $tokens;
@@ -57,15 +61,17 @@ class Parser
     private function getLiterals()
     {
         return array(
-            '(?:\s+)?\'(.+?)\'(?:\s+)?',
-            '(?:\s+)?"(.+?)"(?:\s+)?',
-            '(?:\s+)?([A-Za-z0-9_\.]+)(?:\s+)?',
+            '(?:\s+)?(\d+)(?:\s+)?'             => self::TOK_INT_LITERAL,
+            '(?:\s+)?(\d+\.\d+)(?:\s+)?'        => self::TOK_FLOAT_LITERAL,
+            '(?:\s+)?\'(.+?)\'(?:\s+)?'         => self::TOK_LITERAL,
+            '(?:\s+)?"(.+?)"(?:\s+)?'           => self::TOK_LITERAL,
+            '(?:\s+)?([A-Za-z0-9_\.]+)(?:\s+)?' => self::TOK_LITERAL,
         );
     }
 
     public function isSimpleLiteral($string)
     {
-        foreach($this->getLiterals() as $literal)
+        foreach($this->getLiterals() as $literal => $token)
         {
             if(preg_match("/^$literal$/", $string)){
                 return true;

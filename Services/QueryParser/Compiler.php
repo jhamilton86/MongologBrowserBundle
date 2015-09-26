@@ -30,6 +30,14 @@ class Compiler
                     $stack->endExpression();
                     break;
 
+                case Parser::TOK_INT_LITERAL:
+                    $stack->add(new Literal((int)$this->retrieveCapture($token)));
+                    break;
+
+                case Parser::TOK_FLOAT_LITERAL:
+                    $stack->add(new Literal((float)$this->retrieveCapture($token)));
+                    break;
+
                 case Parser::TOK_LITERAL:
                     $stack->add(new Literal($this->retrieveCapture($token)));
                     break;
