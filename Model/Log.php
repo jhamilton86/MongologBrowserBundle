@@ -94,4 +94,26 @@ class Log
     {
         return $this->extra;
     }
+
+    public function searchExtra()
+    {
+        return $this->buildSearch("extra.", $this->extra);
+    }
+
+    public function searchContext()
+    {
+        return $this->buildSearch("context.", $this->context);
+    }
+
+    private function buildSearch($prefix, array $items)
+    {
+        $parts = array();
+
+        foreach($items as $name => $item)
+        {
+            $parts[] = "{$prefix}{$name} = '{$item}'";
+        }
+
+        return implode(',', $parts);
+    }
 }
