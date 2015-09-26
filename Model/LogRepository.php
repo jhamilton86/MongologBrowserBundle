@@ -46,7 +46,7 @@ class LogRepository
 
         $data = $this->collection->find($search);
 
-        $data->skip($skip)->limit($logsPerPage)->sort(array('datetime' => -1));
+        $data->skip($skip)->limit($logsPerPage)->sort(array('_id' => -1));
 
         return array(
             'total' => $data->count(),
@@ -88,9 +88,10 @@ class LogRepository
             );
         }
 
-        $query['datetime']['$gte'] = $dateRange->getStart()->getTimestamp();
-
-        $query['datetime']['$lte'] = $dateRange->getEnd()->getTimestamp();
+        $query['datetime'] = array(
+            '$gte' => $dateRange->getStart()->getTimestamp(),
+            '$lte' => $dateRange->getEnd()->getTimestamp(),
+        );
 
         return $this->getLogsQueryBuilder($page, $logsPerPage, $query);
     }

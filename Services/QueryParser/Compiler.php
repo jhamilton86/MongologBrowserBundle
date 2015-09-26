@@ -83,13 +83,7 @@ class Compiler
         foreach($stack->get() as $item)
         {
             if($item instanceof StackLevel) {
-
-//                $op = $item->getOperator()->get();
-//
-//                $group[$op] = array_merge_recursive(isset($group[$op]) ? $group[$op] : array(), $this->groupOperators($item));
-
                 $group[] = $this->groupOperators($item);
-
             }elseif($item instanceof StackExpression) {
                 $group[] = $this->arrangeSet($item);
             }else{
