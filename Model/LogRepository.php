@@ -53,10 +53,15 @@ class LogRepository
 
         return array(
             'total' => $data->count(),
-            'results' => array_map(function(array $data){
-                return new Log($data);
-            }, iterator_to_array($data)),
+            'results' => array_map([$this, 'convertArrayToEntity'], iterator_to_array($data)),
         );
+    }
+
+    private function convertArrayToEntity(array $data)
+    {
+        $data['id'] = $data['_id'];
+
+        return new Log($data);
     }
 
     /**
@@ -113,9 +118,7 @@ class LogRepository
 
         if(!$log) return null;
 
-        $log['id'] = $log['_id'];
-
-        return new Log($log);
+        return $this->convertArrayToEntity($log);
     }
 
     /**
