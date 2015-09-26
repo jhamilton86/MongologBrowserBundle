@@ -125,7 +125,7 @@ class Log
             $parts[] = "{$prefix}{$name} = " . $this->enquoteItem($item);
         }
 
-        return implode(',', $parts);
+        return implode(', ', $parts);
     }
 
     private function enquoteItem($item)
