@@ -52,7 +52,7 @@ class Log
 
     public function __toString()
     {
-        return mb_strlen($this->message) > self::MAX_MESSAGE_LENGTH ? sprintf('%s...', mb_substr($this->message, 0, self::MAX_MESSAGE_LENGTH)) : $this->message;
+        return $this->getTruncatedMessage();
     }
 
     public function getId()
@@ -80,6 +80,11 @@ class Log
         return $this->message;
     }
 
+    public function getTruncatedMessage()
+    {
+        return mb_strlen($this->message) > self::MAX_MESSAGE_LENGTH ? sprintf('%s...', mb_substr($this->message, 0, self::MAX_MESSAGE_LENGTH)) : $this->message;
+    }
+
     public function getDate()
     {
         return $this->date;
@@ -95,12 +100,12 @@ class Log
         return $this->extra;
     }
 
-    public function searchExtra()
+    public function getSearchExtra()
     {
         return $this->buildSearch("extra.", $this->extra);
     }
 
-    public function searchContext()
+    public function getSearchContext()
     {
         return $this->buildSearch("context.", $this->context);
     }
