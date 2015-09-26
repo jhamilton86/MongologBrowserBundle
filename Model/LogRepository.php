@@ -51,7 +51,6 @@ class LogRepository
         return array(
             'total' => $cursor->count(),
             'results' => array_map([$this, 'convertArrayToEntity'], iterator_to_array($cursor)),
-            'explain' => $cursor->explain(),
         );
     }
 
