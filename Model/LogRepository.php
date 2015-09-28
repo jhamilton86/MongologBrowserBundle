@@ -44,13 +44,14 @@ class LogRepository
     {
         $skip = $logsPerPage * ($page - 1);
 
-        $data = $this->collection->find($search);
+        $cursor = $this->collection->find($search);
 
-        $data->skip($skip)->limit($logsPerPage)->sort(array('datetime' => -1));
+        $cursor->skip($skip)->limit($logsPerPage)->sort(array('_id' => -1));
 
         return array(
-            'total' => $data->count(),
-            'results' => array_map([$this, 'convertArrayToEntity'], iterator_to_array($data)),
+            'query' => $search,
+            'total' => $cursor->count(),
+            'results' => array_map([$this, 'convertArrayToEntity'], iterator_to_array($cursor)),
         );
     }
 
@@ -88,9 +89,10 @@ class LogRepository
             );
         }
 
-        $query['datetime']['$gte'] = $dateRange->getStart()->getTimestamp();
-
-        $query['datetime']['$lte'] = $dateRange->getEnd()->getTimestamp();
+        $query['datetime'] = array(
+            '$gte' => $dateRange->getStart()->getTimestamp(),
+            '$lte' => $dateRange->getEnd()->getTimestamp(),
+        );
 
         return $this->getLogsQueryBuilder($page, $logsPerPage, $query);
     }

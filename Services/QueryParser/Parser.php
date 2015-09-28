@@ -75,8 +75,8 @@ class Parser
     {
         foreach($this->getLiterals() as $literal => $token)
         {
-            if(preg_match("/^$literal$/", $string)){
-                return true;
+            if(preg_match("/^$literal$/", $string, $matches)){
+                return $matches;
             }
         }
 

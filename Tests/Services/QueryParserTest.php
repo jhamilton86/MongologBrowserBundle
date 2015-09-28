@@ -38,66 +38,94 @@ class QueryParserTest extends \PHPUnit_Framework_TestCase {
     {
 
         return array(
-            array('', []),
+            array('', [
+                '$and' => []
+            ]),
 
             array('a > 9', [
-                'a' => [
-                    '$gt' => '9'
-                ],
-            ]),
-
-            array('a = "10.10.1.1"', [
-                'a' => [
-                    '$eq' => '10.10.1.1'
-                ],
-            ]),
-
-            array('a ~= "foo bar @£$~+="', [
-                'a' => [
-                    '$regex' => 'foo bar @£$~+='
-                ],
-            ]),
-
-            array('a > 9, b = x', [
-                'a' => [
-                    '$gt' => '9'
-                ],
-                'b' => [
-                    '$eq' => 'x'
-                ]
-            ]),
-
-            array('or[a > 9, b = x]', [
-                '$or' => [
-                    'a' => [
-                        '$gt' => '9'
-                    ],
-                    'b' => [
-                        '$eq' => 'x'
+                '$and' => [
+                    [
+                        'a' => [
+                            '$gt' => '9'
+                        ],
                     ]
                 ]
             ]),
 
-            // Silly but works...
-            array('and[or[a > 9, b = x], c = d, c > 5, or[e = f]]', [
+            array('a = "10.10.1.1"', [
                 '$and' => [
-                    '$or' => [
+                    [
+                        'a' => [
+                            '$eq' => '10.10.1.1'
+                        ],
+                    ]
+                ]
+            ]),
+
+            array('a ~= "foo bar @£$~+="', [
+                '$and' => [
+                    [
+                        'a' => [
+                            '$regex' => 'foo bar @£$~+='
+                        ],
+                    ]
+                ]
+            ]),
+
+            array('a > 9, b = x', [
+                '$and' => [
+                    [
                         'a' => [
                             '$gt' => '9'
                         ],
+                    ],
+                    [
                         'b' => [
                             '$eq' => 'x'
-                        ],
-                        'e' => [
-                            '$eq' => 'f'
-                        ],
-                    ],
-                    'c' => [
-                        '$eq' => 'd',
-                        '$gt' => '5'
-                    ],
+                        ]
+                    ]
                 ]
             ]),
+
+            array('or[a > 9, b = x]', [
+                '$and' => [
+                    [
+                        '$or' => [
+                            [
+                                'a' => [
+                                    '$gt' => '9'
+                                ],
+                            ],
+                            [
+                                'b' => [
+                                    '$eq' => 'x'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]),
+
+//            // Silly but works...
+//            array('and[or[a > 9, b = x], c = d, c > 5, or[e = f]]', [
+//                '$and' => [
+//                    '$or' => [
+//                        'a' => [
+//                            '$gt' => '9'
+//                        ],
+//                        'b' => [
+//                            '$eq' => 'x'
+//                        ],
+//                        'e' => [
+//                            '$eq' => 'f'
+//                        ],
+//                    ],
+//                    'c' => [
+//                        '$eq' => 'd',
+//                        '$gt' => '5'
+//                    ],
+//                ]
+//            ]),
 
             // Dont work:
             array('a 9', [], new InvalidExpressionException('a 9')),

@@ -67,7 +67,9 @@ class Compiler
             throw new UnbalancedParenthesisException($stack->getLevel());
         }
 
-        return $this->groupOperators($stack);
+        $item = $this->groupOperators($stack);
+
+        return $item;
     }
 
     /**
@@ -81,19 +83,15 @@ class Compiler
         foreach($stack->get() as $item)
         {
             if($item instanceof StackLevel) {
-
-                $op = $item->getOperator()->get();
-
-                $group[$op] = array_merge_recursive(isset($group[$op]) ? $group[$op] : array(), $this->groupOperators($item));
-
+                $group[] = $this->groupOperators($item);
             }elseif($item instanceof StackExpression) {
-                $group = array_merge_recursive($group, $this->arrangeSet($item));
+                $group[] = $this->arrangeSet($item);
             }else{
                 throw new QueryParserException("Unexpected value in item of type: " . gettype($item));
             }
         }
 
-        return $group;
+        return [$stack->getOperator()->get() => $group];
     }
 
     /**

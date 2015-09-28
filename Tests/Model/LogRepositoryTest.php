@@ -9,21 +9,9 @@ class LogRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testItInitializesLogRepositoryObject()
     {
-        $mongo = $this->getMockBuilder('MongoClient')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mongoDb = $this->getMockBuilder('MongoDB')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $mongoCollection = $this->getMockBuilder('MongoCollection')
             ->disableOriginalConstructor()
             ->getMock();
-
-        $mongo->expects($this->once())->method('selectDB')->with('foo')->willReturn($mongoDb);
-        $mongoDb->expects($this->once())->method('createCollection')->with('bar')->willReturn($mongoCollection);
-
 
         $mongoCursor = $this->getMockBuilder('MongoCursor')
             ->disableOriginalConstructor()
@@ -35,7 +23,7 @@ class LogRepositoryTest extends \PHPUnit_Framework_TestCase
         $mongoCursor->expects($this->once())->method('sort')->with(array('datetime' => -1))->willReturnSelf();
         $mongoCursor->expects($this->once())->method('count')->willReturn(5);
 
-        $repository = new LogRepository($mongo, 'foo', 'bar');
+        $repository = new LogRepository($mongoCollection);
 
         $results = $repository->all(3, 10);
 
@@ -49,20 +37,10 @@ class LogRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testTheSearchMethodReturnsArray()
     {
-        $mongo = $this->getMockBuilder('MongoClient')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mongoDb = $this->getMockBuilder('MongoDB')
-            ->disableOriginalConstructor()
-            ->getMock();
 
         $mongoCollection = $this->getMockBuilder('MongoCollection')
             ->disableOriginalConstructor()
             ->getMock();
-
-        $mongo->expects($this->once())->method('selectDB')->with('foo')->willReturn($mongoDb);
-        $mongoDb->expects($this->once())->method('createCollection')->with('bar')->willReturn($mongoCollection);
 
 
         $mongoCursor = $this->getMockBuilder('MongoCursor')
@@ -94,7 +72,7 @@ class LogRepositoryTest extends \PHPUnit_Framework_TestCase
         $mongoCursor->expects($this->once())->method('sort')->with(array('datetime' => -1))->willReturnSelf();
         $mongoCursor->expects($this->once())->method('count')->willReturn(5);
 
-        $repository = new LogRepository($mongo, 'foo', 'bar');
+        $repository = new LogRepository($mongoCollection);
 
         $search = array(
             'message' => array(
@@ -114,20 +92,9 @@ class LogRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testItCanGetLogById()
     {
-        $mongo = $this->getMockBuilder('MongoClient')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mongoDb = $this->getMockBuilder('MongoDB')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $mongoCollection = $this->getMockBuilder('MongoCollection')
             ->disableOriginalConstructor()
             ->getMock();
-
-        $mongo->expects($this->once())->method('selectDB')->with('foo')->willReturn($mongoDb);
-        $mongoDb->expects($this->once())->method('createCollection')->with('bar')->willReturn($mongoCollection);
 
         $mongoCollection->expects($this->once())->method('findOne')->willReturn(array(
             '_id' => '507f1f77bcf86cd799439011',
@@ -138,7 +105,7 @@ class LogRepositoryTest extends \PHPUnit_Framework_TestCase
             'datetime' => '2015-09-01 00:00:00'
         ));
 
-        $repository = new LogRepository($mongo, 'foo', 'bar');
+        $repository = new LogRepository($mongoCollection);
 
         $this->assertNotNull($repository->getLogById('507f1f77bcf86cd799439011'));
     }
