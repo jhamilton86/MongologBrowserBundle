@@ -94,8 +94,8 @@ class DefaultController extends Controller
         $parser = new Parser();
 
         // Handle a basic message search eg: 'foo bar'
-        if($parser->isSimpleLiteral($searchQuery)){
-            return array('message' => array('$regex' => $searchQuery));
+        if($matches = $parser->isSimpleLiteral($searchQuery)){
+            return array('message' => array('$regex' => $matches[1]));
         }
 
         // Handle a full query search eg: 'foo > bar'
