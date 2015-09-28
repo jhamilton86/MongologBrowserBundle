@@ -49,6 +49,7 @@ class LogRepository
         $cursor->skip($skip)->limit($logsPerPage)->sort(array('_id' => -1));
 
         return array(
+            'query' => $search,
             'total' => $cursor->count(),
             'results' => array_map([$this, 'convertArrayToEntity'], iterator_to_array($cursor)),
         );
