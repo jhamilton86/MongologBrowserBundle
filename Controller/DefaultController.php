@@ -50,7 +50,9 @@ class DefaultController extends Controller
 
                 $validParams = $filter->getData();
 
-                $mongoQuery = $this->parseSearchQuery($validParams['term']);
+                $term = trim($validParams['term']);
+
+                $mongoQuery = $term ? $this->parseSearchQuery($term) :  array();
 
                 $query = $logRepository->search(
                     $page,
