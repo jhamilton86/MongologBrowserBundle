@@ -50,9 +50,7 @@ class DefaultController extends Controller
 
                 $validParams = $filter->getData();
 
-                $term = trim($validParams['term']);
-
-                $mongoQuery = $term ? $this->parseSearchQuery($term) :  array();
+                $mongoQuery = $this->parseSearchQuery($validParams['term']);
 
                 $query = $logRepository->search(
                     $page,
@@ -64,7 +62,6 @@ class DefaultController extends Controller
             else
             {
                 $query = $logRepository->all($page, $logsPerPage);
-
             }
 
             $pagination = $this->get('knp_paginator')->paginate(
@@ -88,6 +85,7 @@ class DefaultController extends Controller
             'pagination'  => $pagination,
             'results'     => isset($query['results']) ? $query['results'] : array(),
             'base_layout' => $this->getBaseLayout(),
+            'search'      => isset($query['search']) ? $query['search'] : array()
         ));
     }
 
@@ -96,8 +94,8 @@ class DefaultController extends Controller
         $parser = new Parser();
 
         // Handle a basic message search eg: 'foo bar'
-        if($matches = $parser->isSimpleLiteral($searchQuery)){
-            return array('message' => array('$regex' => $matches[1]));
+        if($parser->isSimpleLiteral($searchQuery)){
+            return array('message' => array('$regex' => $searchQuery));
         }
 
         // Handle a full query search eg: 'foo > bar'
