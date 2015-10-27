@@ -24,6 +24,9 @@ class LogSearchType extends AbstractType
                 'choices'     => $options['log_levels'],
                 'required'    => false
             ))
+            ->add('results', 'text', array(
+                'required' => false,
+            ))
             ->add('datefrom', 'text', array(
                 'required'    => true,
             ))
