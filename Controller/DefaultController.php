@@ -27,6 +27,16 @@ class DefaultController extends Controller
         return new DateRangeSet(new \DateTime($params['datefrom']), new \DateTime($params['dateto']));
     }
 
+    private function validateResultsPerPage($logsPerPage)
+    {
+        if ($logsPerPage > 1000)
+        {
+            throw new InvalidSearchException('Results per page cannot be greater than 1000.');
+        }
+
+        return $logsPerPage;
+    }
+
     /**
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
@@ -40,11 +50,12 @@ class DefaultController extends Controller
         ));
 
         try {
+            $search = $request->get($filter->getName());
 
-            $logsPerPage = $this->container->getParameter('mongolog_browser.logs_per_page');
+            $logsPerPage = (isset($search) && $search['results']) ? $search['results'] : $this->container->getParameter('mongolog_browser.logs_per_page');
             $page = $request->get('page', 1);
 
-            if($search = $request->get($filter->getName()))
+            if($search)
             {
                 $filter->submit($search);
 
@@ -54,7 +65,7 @@ class DefaultController extends Controller
 
                 $query = $logRepository->search(
                     $page,
-                    $logsPerPage,
+                    $this->validateResultsPerPage($logsPerPage),
                     $this->getDateRangeFromQueryParams($validParams),
                     $mongoQuery,
                     $validParams['level']);
