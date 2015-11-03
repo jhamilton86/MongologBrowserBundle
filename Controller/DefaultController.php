@@ -96,7 +96,7 @@ class DefaultController extends Controller
             'pagination'  => $pagination,
             'results'     => isset($query['results']) ? $query['results'] : array(),
             'base_layout' => $this->getBaseLayout(),
-            'search'      => isset($query['search']) ? $query['search'] : array()
+            'search'      => isset($query['search']) ? print_r($query['search'], 1) : array()
         ));
     }
 
