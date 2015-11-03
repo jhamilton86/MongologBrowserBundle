@@ -52,7 +52,7 @@ class DefaultController extends Controller
         try {
             $search = $request->get($filter->getName());
 
-            $logsPerPage = (isset($search) && $search['results']) ? $search['results'] : $this->container->getParameter('mongolog_browser.logs_per_page');
+            $logsPerPage = (isset($search) && isset($search['results'])) ? $search['results'] : $this->container->getParameter('mongolog_browser.logs_per_page');
             $page = $request->get('page', 1);
 
             if($search)
